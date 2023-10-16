@@ -1,0 +1,61 @@
+import java.awt.*;
+import java.awt.event.*;
+
+public class WhackAZombie extends Frame implements ActionListener {
+    private Button startButton;
+    private Label scoreLabel;
+    private int score;
+    private boolean gameStarted;
+
+    public WhackAZombie() {
+        setSize(400, 400);
+        setLayout(new FlowLayout());
+
+        startButton = new Button("Start");
+        startButton.addActionListener(this);
+        add(startButton);
+
+        scoreLabel = new Label("Score: 0");
+        add(scoreLabel);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                System.exit(0);
+            }
+        });
+
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == startButton) {
+            if (!gameStarted) {
+                gameStarted = true;
+                Thread gameThread = new Thread(new GameRunnable());
+                gameThread.start();
+            }
+        }
+    }
+
+    public void updateScore() {
+        scoreLabel.setText("Score: " + score);
+    }
+
+    class GameRunnable implements Runnable {
+        public void run() {
+            while (gameStarted) {
+                try {
+                    Thread.sleep(1000); // Pause for 1 second
+                    score++;
+                    updateScore();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        new WhackAZombie();
+    }
+}
